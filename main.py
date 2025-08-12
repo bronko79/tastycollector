@@ -311,9 +311,9 @@ class TastytradeIngestor:
           year=now.year,
           month=now.month,
           day=now.day,
-          hour=12,  # Stunden
-          minute=59,  # Minuten
-          second=0,
+          hour=13,  # Stunden
+          minute=29,  # Minuten
+          second=59,
           microsecond=0
       )
       return int(target.timestamp() * 1000)
@@ -487,6 +487,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
