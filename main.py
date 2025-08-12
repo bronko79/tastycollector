@@ -399,7 +399,7 @@ async def health():
 
 @app.get("/ticks")
 async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)):
-    since_ms = parse_since(since)
+    since_ms = since
     async def gen():
         async for row in STORE.iter_ticks(symbol, since_ms):
             yield json.dumps(row) + "\n"
@@ -462,6 +462,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
