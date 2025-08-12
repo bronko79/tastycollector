@@ -4,4 +4,5 @@ httpx
 websockets
 aiosqlite
 pydantic
+hypercorn==0.14.4
 python-dotenv
