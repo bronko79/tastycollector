@@ -88,6 +88,7 @@ def utcnow_iso() -> str:
 # ------------------------------
 
 CREATE_TABLE_SQL = """
+DROP TABLE ticks;
 CREATE TABLE IF NOT EXISTS ticks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     symbol TEXT NOT NULL,
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS ticks (
     expiry TEXT,               -- z. B. "2025-08-15"; None für Underlyings
     payload TEXT NOT NULL      -- Roh-JSON der Tick-Nachricht
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uq_ticks_symbol_ts ON ticks(symbol, eventSymbol, ts_ms);
 
 """
 
@@ -448,4 +450,5 @@ def main():
 if __name__ == "__main__":
     main()
     
+
 """
