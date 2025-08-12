@@ -305,7 +305,7 @@ class TastytradeIngestor:
             items.append(item)
         return items
 
-    def get_todays_market_open():
+    def get_todays_market_open(self):
       now = datetime.now()
       target = datetime(
           year=now.year,
@@ -332,7 +332,7 @@ class TastytradeIngestor:
                 try:
                     msg = json.loads(raw)
                     if msg['type'] == "AUTH_STATE" and msg["state"] == "UNAUTHORIZED":
-                        mo = get_todays_market_open()
+                        mo = self.get_todays_market_open()
                         print("Marketopen: " + str(mo))
                         await ws.send('{"type":"AUTH","channel":0,"token":"' + self._streamer_context["data"]["token"] + '"}')
 
@@ -488,6 +488,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
