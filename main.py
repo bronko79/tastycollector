@@ -85,12 +85,10 @@ def utcnow_iso() -> str:
 
 # ------------------------------
 # Persistenz
-#
+# DROP TABLE IF EXISTS ticks;
 # ------------------------------
 
 CREATE_TABLE_SQL = """
-DROP TABLE IF EXISTS ticks;
-
 CREATE TABLE IF NOT EXISTS ticks (
     id INTEGER PRIMARY KEY,
     symbol TEXT NOT NULL,
@@ -487,6 +485,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
