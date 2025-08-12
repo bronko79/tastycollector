@@ -89,6 +89,8 @@ def utcnow_iso() -> str:
 # ------------------------------
 
 CREATE_TABLE_SQL = """
+DROP TABLE IF EXISTS ticks;
+
 CREATE TABLE IF NOT EXISTS ticks (
     id INTEGER PRIMARY KEY,
     symbol TEXT NOT NULL,
@@ -309,7 +311,7 @@ class TastytradeIngestor:
           year=now.year,
           month=now.month,
           day=now.day,
-          hour=12,  # Stunden
+          hour=13,  # Stunden
           minute=29,  # Minuten
           second=59,
           microsecond=0
@@ -480,6 +482,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
