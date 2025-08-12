@@ -413,7 +413,7 @@ async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)
               first = False
           yield json.dumps(row) + "\n"
       yield "]"  # Ende Array
-    return StreamingResponse(gen(), media_type="application/json")
+    return StreamingResponse(gen(), media_type="application/x-ndjson")
     #return StreamingResponse(gen(), media_type="application/x-ndjson")
 
 #@app.get("/ticks")
@@ -474,6 +474,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
