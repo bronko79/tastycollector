@@ -391,7 +391,7 @@ async def _on_shutdown():
     #    await task
     #except Exception:
     #    pass
-    #await STORE.close()
+    await STORE.close()
 
 @app.get("/startcollector")
 async def startCollector():
@@ -407,7 +407,7 @@ async def stopCollector():
         await task
     except Exception:
         pass
-    await STORE.close()
+    #await STORE.close()
 
 @app.get("/health")
 async def health():
@@ -471,6 +471,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
