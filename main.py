@@ -67,7 +67,7 @@ class Settings:
     tasty_username: str = os.getenv("TASTY_USERNAME", "")
     tasty_password: str = os.getenv("TASTY_PASSWORD", "")
     feed_symbols: List[str] = tuple(s.strip() for s in os.getenv("FEED_SYMBOLS", "SPY").split(","))
-    db_path: str = os.getenv("DB_PATH", "./ticks.db")
+    db_path: str = os.getenv("DB_PATH", "./xticks.db")
     server_host: str = os.getenv("SERVER_HOST", "0.0.0.0")
     server_port: int = int(os.getenv("SERVER_PORT", "8000"))
     backlog_seconds: int = int(os.getenv("BACKLOG_SECONDS", "3600"))  # Beim Client-Connect zurückliegende Zeitspanne
@@ -88,18 +88,18 @@ def utcnow_iso() -> str:
 # ------------------------------
 
 CREATE_TABLE_SQL = """
-DROP TABLE ticks;
 CREATE TABLE IF NOT EXISTS ticks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     symbol TEXT NOT NULL,
     eventSymbol TEXT NOT NULL,
-    eventType TEXT,            -- z. B. "TimeAndSale" oder "Greeks"
-    ts_ms INTEGER NOT NULL,    -- Unixzeit in Millisekunden
-    expiry TEXT,               -- z. B. "2025-08-15"; None für Underlyings
-    payload TEXT NOT NULL      -- Roh-JSON der Tick-Nachricht
+    eventType TEXT NOT NULL,
+    ts_ms INTEGER NOT NULL, 
+    expiry TEXT,
+    payload TEXT NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS uq_ticks_symbol_ts ON ticks(symbol, eventSymbol, ts_ms);
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_ticks_uni
+    ON ticks(symbol, eventSymbol, eventType, ts_ms);
 """
 
 class DataStore:
@@ -452,3 +452,4 @@ if __name__ == "__main__":
     
 
 """
+
