@@ -405,8 +405,8 @@ async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)
     since_ms = since
     async def gen():
         async for row in STORE.iter_ticks(symbol, since_ms):
-            yield json.dumps(row) + "\n"
-            #yield row + "\n"
+            #yield json.dumps(row) + "\n"
+            yield row + "\n"
     return StreamingResponse(gen(), media_type="application/x-ndjson")
   
 #async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)):
@@ -466,6 +466,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
