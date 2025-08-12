@@ -207,7 +207,7 @@ class TastytradeIngestor:
             "Greeks" : ["eventType", "eventSymbol", "time", "eventTime", "price", "volatility", "delta", "gamma", "theta", "rho", "vega", "index", "sequence"]
         }
 
-
+        self.marketOpenTimestamp = self.get_todays_market_open()
         self.settings = settings
         self.store = store
         self.broadcaster = broadcaster
@@ -311,8 +311,8 @@ class TastytradeIngestor:
           year=now.year,
           month=now.month,
           day=now.day,
-          hour=13,  # Stunden
-          minute=30,  # Minuten
+          hour=12,  # Stunden
+          minute=50,  # Minuten
           second=0,
           microsecond=0
       )
@@ -332,8 +332,7 @@ class TastytradeIngestor:
                 try:
                     msg = json.loads(raw)
                     if msg['type'] == "AUTH_STATE" and msg["state"] == "UNAUTHORIZED":
-                        mo = self.get_todays_market_open()
-                        print("Marketopen: " + str(mo))
+                        print("Marketopen: " + str(self.marketOpenTimestamp))
                         await ws.send('{"type":"AUTH","channel":0,"token":"' + self._streamer_context["data"]["token"] + '"}')
 
                     if msg['type'] == "AUTH_STATE" and msg["state"] == "AUTHORIZED":
@@ -352,29 +351,29 @@ class TastytradeIngestor:
                             await ws.send('{"type":"FEED_SUBSCRIPTION","channel":1,"add":[{"type": "TimeAndSale", "symbol": "' + streamerSymbol + '"}, {"type": "Greeks", "symbol": "' + streamerSymbol + '"}] }')
 
                     if msg['type'] == "FEED_DATA":
-                        compactData = msg["data"]
                         received_ms = int(time.time() * 1000)
-                        fullData = self.onCompactMessage(compactData, received_ms)
-                        
-                        buffer = []
-                        for item in fullData:
+                        if received_ms >= self.marketOpenTimestamp:
                           compactData = msg["data"]
-                          received_ms = int(time.time() * 1000)
                           fullData = self.onCompactMessage(compactData, received_ms)
                           buffer = []
                           for item in fullData:
-                            payloadString = json.dumps(item)
-                            buffer.append( (item.get("eventSymbol"), item.get("eventType"), underlyingSymbol, int(item.get("time")), payloadString, expireData) )
-                            await self.broadcaster.publish({
-                                "streamtype": "tick",
-                                "symbol": underlyingSymbol,
-                                "eventSymbol": item.get("eventSymbol"),
-                                "eventType": item.get("eventType"),
-                                "ts_ms": int(item.get("time")),
-                                "expiry": expireData,
-                                "data": item,
-                            })
-                          await self.store.insert_ticks_bulk(buffer)
+                            compactData = msg["data"]
+                            received_ms = int(time.time() * 1000)
+                            fullData = self.onCompactMessage(compactData, received_ms)
+                            buffer = []
+                            for item in fullData:
+                              payloadString = json.dumps(item)
+                              buffer.append( (item.get("eventSymbol"), item.get("eventType"), underlyingSymbol, int(item.get("time")), payloadString, expireData) )
+                              await self.broadcaster.publish({
+                                  "streamtype": "tick",
+                                  "symbol": underlyingSymbol,
+                                  "eventSymbol": item.get("eventSymbol"),
+                                  "eventType": item.get("eventType"),
+                                  "ts_ms": int(item.get("time")),
+                                  "expiry": expireData,
+                                  "data": item,
+                              })
+                            await self.store.insert_ticks_bulk(buffer)
 
                     if msg['type'] == "KEEPALIVE":
                         await ws.send('{"type":"KEEPALIVE","channel":0}')
@@ -488,6 +487,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
