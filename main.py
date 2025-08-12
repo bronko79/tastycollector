@@ -309,7 +309,7 @@ class TastytradeIngestor:
           year=now.year,
           month=now.month,
           day=now.day,
-          hour=13,  # Stunden
+          hour=12,  # Stunden
           minute=29,  # Minuten
           second=59,
           microsecond=0
@@ -355,22 +355,17 @@ class TastytradeIngestor:
                           fullData = self.onCompactMessage(compactData, received_ms)
                           buffer = []
                           for item in fullData:
-                            compactData = msg["data"]
-                            received_ms = int(time.time() * 1000)
-                            fullData = self.onCompactMessage(compactData, received_ms)
-                            buffer = []
-                            for item in fullData:
-                              payloadString = json.dumps(item)
-                              buffer.append( (item.get("eventSymbol"), item.get("eventType"), underlyingSymbol, int(item.get("time")), payloadString, expireData) )
-                              await self.broadcaster.publish({
-                                  "streamtype": "tick",
-                                  "symbol": underlyingSymbol,
-                                  "eventSymbol": item.get("eventSymbol"),
-                                  "eventType": item.get("eventType"),
-                                  "ts_ms": int(item.get("time")),
-                                  "expiry": expireData,
-                                  "data": item,
-                              })
+                            payloadString = json.dumps(item)
+                            buffer.append( (item.get("eventSymbol"), item.get("eventType"), underlyingSymbol, int(item.get("time")), payloadString, expireData) )
+                            await self.broadcaster.publish({
+                                "streamtype": "tick",
+                                "symbol": underlyingSymbol,
+                                "eventSymbol": item.get("eventSymbol"),
+                                "eventType": item.get("eventType"),
+                                "ts_ms": int(item.get("time")),
+                                "expiry": expireData,
+                                "data": item,
+                            })
                             await self.store.insert_ticks_bulk(buffer)
 
                     if msg['type'] == "KEEPALIVE":
@@ -485,6 +480,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
