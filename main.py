@@ -358,7 +358,7 @@ class TastytradeIngestor:
                                 "eventType": item.get("eventType"),
                                 "ts_ms": int(item.get("time")),
                                 "expiry": expireData,
-                                "data": payloadString,
+                                "data": item,
                             })
                           await self.store.insert_ticks_bulk(buffer)
 
@@ -466,6 +466,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
