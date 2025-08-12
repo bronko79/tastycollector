@@ -378,28 +378,12 @@ INGESTOR = TastytradeIngestor(SETTINGS, STORE, BROADCASTER)
 async def _on_startup():
     await STORE.open()
     # Ingestor Task
-    #app.state.ingestor_task = asyncio.create_task(INGESTOR.run())
+    app.state.ingestor_task = asyncio.create_task(INGESTOR.run())
     print("[APP] Startup komplett")
 
 @app.on_event("shutdown")
 async def _on_shutdown():
     print("[APP] Shutting down")
-    #await INGESTOR.stop()
-    #task: asyncio.Task = app.state.ingestor_task
-    #task.cancel()
-    #try:
-    #    await task
-    #except Exception:
-    #    pass
-    await STORE.close()
-
-@app.get("/startcollector")
-async def startCollector():
-    app.state.ingestor_task = asyncio.create_task(INGESTOR.run())
-    return {"status": "Started"}
-
-@app.get("/stopcollector")
-async def stopCollector():
     await INGESTOR.stop()
     task: asyncio.Task = app.state.ingestor_task
     task.cancel()
@@ -407,7 +391,7 @@ async def stopCollector():
         await task
     except Exception:
         pass
-    #await STORE.close()
+    await STORE.close()
 
 @app.get("/health")
 async def health():
@@ -471,6 +455,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
