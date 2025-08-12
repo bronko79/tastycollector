@@ -344,47 +344,23 @@ class TastytradeIngestor:
                         
                         buffer = []
                         for item in fullData:
-                            ts_ms = int(item.get("time", received_ms))
-                            event_symbol = item.get("eventSymbol")
-                            event_type = item.get("eventType")
-                            # Broadcast: data als dict, nicht als String
-                            out = {
+                          compactData = msg["data"]
+                          received_ms = int(time.time() * 1000)
+                          fullData = self.onCompactMessage(compactData, received_ms)
+                          buffer = []
+                          for item in fullData:
+                            payloadString = json.dumps(item)
+                            buffer.append( (item.get("eventSymbol"), item.get("eventType"), underlyingSymbol, int(item.get("time")), payloadString, expireData) )
+                            await self.broadcaster.publish({
                                 "streamtype": "tick",
                                 "symbol": underlyingSymbol,
-                                "eventSymbol": event_symbol,
-                                "eventType": event_type,
-                                "ts_ms": ts_ms,
+                                "eventSymbol": item.get("eventSymbol"),
+                                "eventType": item.get("eventType"),
+                                "ts_ms": int(item.get("time")),
                                 "expiry": expireData,
-                                "data": item,
-                            }
-                            await self.broadcaster.publish(out)
-                        
-                            buffer.append((
-                                underlyingSymbol,            # symbol
-                                event_symbol,                # eventSymbol
-                                event_type,                  # eventType
-                                ts_ms,                       # ts_ms
-                                json.dumps(item),            # payload
-                                expireData                   # expiry
-                            ))
-                        await self.store.insert_ticks_bulk(buffer)
-                        #compactData = msg["data"]
-                        #received_ms = int(time.time() * 1000)
-                        #fullData = self.onCompactMessage(compactData, received_ms)
-                        #buffer = []
-                        #for item in fullData:
-                        #    payloadString = json.dumps(item)
-                        #    buffer.append( (item.get("eventSymbol"), item.get("eventType"), underlyingSymbol, int(item.get("time")), payloadString, expireData) )
-                        #    await self.broadcaster.publish({
-                        #        "streamtype": "tick",
-                        #        "symbol": underlyingSymbol,
-                        #        "eventSymbol": item.get("eventSymbol"),
-                        #        "eventType": item.get("eventType"),
-                        #        "ts_ms": int(item.get("time")),
-                        #        "expiry": expireData,
-                        #        "data": payloadString,
-                        #    })
-                        #await self.store.insert_ticks_bulk(buffer)
+                                "data": payloadString,
+                            })
+                          await self.store.insert_ticks_bulk(buffer)
 
                     if msg['type'] == "KEEPALIVE":
                         await ws.send('{"type":"KEEPALIVE","channel":0}')
@@ -429,8 +405,8 @@ async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)
     since_ms = since
     async def gen():
         async for row in STORE.iter_ticks(symbol, since_ms):
-            #yield json.dumps(row) + "\n"
-            yield row + "\n"
+            yield json.dumps(row) + "\n"
+            #yield row + "\n"
     return StreamingResponse(gen(), media_type="application/x-ndjson")
   
 #async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)):
@@ -490,6 +466,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
