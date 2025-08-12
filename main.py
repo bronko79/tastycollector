@@ -311,7 +311,7 @@ class TastytradeIngestor:
           year=now.year,
           month=now.month,
           day=now.day,
-          hour=15,  # Stunden
+          hour=13,  # Stunden
           minute=30,  # Minuten
           second=0,
           microsecond=0
@@ -488,6 +488,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
