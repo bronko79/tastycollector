@@ -312,7 +312,7 @@ class TastytradeIngestor:
           month=now.month,
           day=now.day,
           hour=12,  # Stunden
-          minute=50,  # Minuten
+          minute=54,  # Minuten
           second=0,
           microsecond=0
       )
@@ -487,6 +487,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
