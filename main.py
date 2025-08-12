@@ -399,10 +399,17 @@ async def health():
 
 @app.get("/ticks")
 async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)):
+    since_ms = parse_since(since)
     async def gen():
-        async for row in STORE.iter_ticks(symbol, since):
+        async for row in STORE.iter_ticks(symbol, since_ms):
             yield json.dumps(row) + "\n"
-    return JSONResponse(content=[row async for row in STORE.iter_ticks(symbol, since)])
+    return StreamingResponse(gen(), media_type="application/x-ndjson")
+  
+#async def get_ticks(symbol: str = Query(...), since: Optional[str] = Query(None)):
+#    async def gen():
+#        async for row in STORE.iter_ticks(symbol, since):
+#            yield json.dumps(row) + "\n"
+#    return JSONResponse(content=[row async for row in STORE.iter_ticks(symbol, since)])
 
 @app.websocket("/ws")
 async def ws_endpoint(ws: WebSocket, symbol: str, since: Optional[str] = None):
@@ -455,6 +462,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
