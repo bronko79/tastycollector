@@ -387,7 +387,7 @@ INGESTOR = TastytradeIngestor(SETTINGS, STORE, BROADCASTER)
 async def _on_startup():
     await STORE.open()
     # Ingestor Task
-    #app.state.ingestor_task = asyncio.create_task(INGESTOR.run())
+    app.state.ingestor_task = asyncio.create_task(INGESTOR.run())
     print("[APP] Startup komplett")
 
 @app.on_event("shutdown")
@@ -480,6 +480,7 @@ if __name__ == "__main__":
     
 
 """
+
 
 
 
